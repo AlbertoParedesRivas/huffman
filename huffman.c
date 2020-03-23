@@ -37,6 +37,7 @@ int main()
     float *frecuencias = NULL;
     char **diccionario = NULL;
     int codigoGenerado = 0;
+    int arbolGenerado = 0;
     nodoArbol *arbol;
     simbolos = (char *)malloc(sizeof(char));
     frecuencias = (float *)malloc(sizeof(float));
@@ -60,9 +61,12 @@ int main()
         if (codigoGenerado)
         {
             printf("8. Codificar mensaje\n9. Decodificar mensaje\n10. Salir\n");
+            mostrarDiccionario(simbolos, diccionario, tamano);
+        }
+        else if (arbolGenerado)
+        {
             printf("Arbol actual:\n");
             mostrarArbol(arbol, 0);
-            mostrarDiccionario(simbolos, diccionario, tamano);
         }
         else
         {
@@ -87,12 +91,14 @@ int main()
             break;
         case 5:
             arbol = generarDiccionario(simbolos, frecuencias, tamano, &codigoGenerado, &diccionario);
+            arbolGenerado = 1;
             break;
         case 6:
             guardarDiccionario(simbolos, diccionario, tamano, codigoGenerado);
             break;
         case 7:
             cargarDiccionario(&simbolos, &diccionario, &tamano, &codigoGenerado);
+            arbolGenerado = 0;
             break;
         case 8:
             codificarMensaje(simbolos, diccionario, tamano, codigoGenerado);
@@ -320,7 +326,7 @@ void cargarDiccionario(char **simbolos, char ***diccionario, int *tamano, int *c
                     free(tmpSimbolos);
                 }
             }
-            else if (j != 1)
+            else if (j != 1 && (buffer[j] == '0' || buffer[j] == '1'))
             {
                 tamanoCodigo++;
                 tmpCodigo = (char *)realloc(codigo, sizeof(char) * tamanoCodigo);
