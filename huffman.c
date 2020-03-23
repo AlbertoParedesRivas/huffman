@@ -79,15 +79,19 @@ int main()
         {
         case 1:
             registrarSimbolo(simbolos, frecuencias, &tamano);
+            codigoGenerado = 0;
             break;
         case 2:
             listarSimbolos(simbolos, frecuencias, &tamano);
+            codigoGenerado = 0;
             break;
         case 3:
             eliminarSimbolo(simbolos, frecuencias, &tamano);
+            codigoGenerado = 0;
             break;
         case 4:
             modificarSimbolo(simbolos, frecuencias, &tamano);
+            codigoGenerado = 0;
             break;
         case 5:
             arbol = generarDiccionario(simbolos, frecuencias, tamano, &codigoGenerado, &diccionario);
