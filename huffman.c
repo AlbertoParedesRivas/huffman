@@ -11,6 +11,16 @@ void mostrarDiccionario(char *, char **, int);
 void guardarDiccionario(char *, char **, int, int);
 void codificarMensaje(char *, char **, int, int);
 void decodificarMensaje(char *, char **, int, int);
+struct nodo *generarDiccionario(char *,float *, int, int*, char***);
+void mostrarLista(struct nodo *);
+
+struct nodo{
+    char letra;
+    float frecuencia;
+    struct nodo *sig;
+    struct nodo *cero;
+    struct nodo *uno;
+};
 
 int main()
 {
@@ -19,6 +29,7 @@ int main()
     float *frecuencias = NULL;
     char **diccionario = NULL;
     int codigoGenerado = 0;
+    struct nodo *arbol;
     simbolos = (char *)malloc(sizeof(char));
     frecuencias = (float *)malloc(sizeof(float));
     diccionario = (char **)malloc(sizeof(char *));
@@ -41,7 +52,8 @@ int main()
         if (codigoGenerado)
         {
             printf("8. Codificar mensaje\n9. Decodificar mensaje\n10. Salir\n");
-            mostrarDiccionario(simbolos, diccionario, tamano);
+            // mostrarDiccionario(simbolos, diccionario, tamano);
+            mostrarLista(arbol);
         }
         else
         {
@@ -65,7 +77,7 @@ int main()
             modificarSimbolo(simbolos, frecuencias, &tamano);
             break;
         case 5:
-            printf("En construccion");
+            arbol = generarDiccionario(simbolos, frecuencias, tamano,&codigoGenerado, &diccionario);
             break;
         case 6:
             guardarDiccionario(simbolos, diccionario, tamano, codigoGenerado);
@@ -234,9 +246,10 @@ void modificarSimbolo(char *simbolos, float *frecuencias, int *tamano)
 
 void mostrarDiccionario(char *simbolos, char **diccionario, int tamano)
 {
+    printf("\nDiccionario actual:\n");
     for (int i = 0; i < tamano; i++)
     {
-        printf("%c %s %d\n", simbolos[i], diccionario[i], strlen(diccionario[i]));
+        printf("%c-%s\n", simbolos[i], diccionario[i]);
     }
 }
 
@@ -282,7 +295,6 @@ void cargarDiccionario(char **simbolos, char ***diccionario, int *tamano, int *c
     {
         j = 0;
         tamanoCodigo = 0;
-        printf("%s %ld", buffer, strlen(buffer));
         while (buffer[j] != '\n')
         {
             if (j == 0)
@@ -418,21 +430,17 @@ void decodificarMensaje(char *simbolos, char **diccionario, int tamano, int codi
             if (tmpCodigo)
             {
                 codigo = tmpCodigo;
-                codigo[tamanoCodigo-2] = '\0';
-                codigo[tamanoCodigo-1] = caracter;
-                // printf("%s\n", codigo);
+                codigo[tamanoCodigo-1] = '\0';
+                codigo[tamanoCodigo-2] = caracter;
                 for (int i = 0; i < tamano; i++)
                 {
-                    printf("%ld - %ld\n",strlen(codigo), strlen(diccionario[i]));
-                    printf("%s - %s.\n",codigo, diccionario[i]);
-                    // if (strcmp(codigo, diccionario[i]) == 0)
-                    // {
-                    //     printf("*");
-                    //     fputc(simbolos[i], archivoDecodificado);
-                    //     tamanoCodigo = 0;
-                    // }
+                    if (strcmp(codigo, diccionario[i]) == 0)
+                    {
+                        fputc(simbolos[i], archivoDecodificado);
+                        tamanoCodigo = 1;
+                        break;
+                    }
                 }
-                break;
             }
             else
             {
@@ -443,4 +451,66 @@ void decodificarMensaje(char *simbolos, char **diccionario, int tamano, int codi
         fclose(archivo);
         fclose(archivoDecodificado);
     }
+}
+
+struct nodo *generarDiccionario(char *simbolos, float *frecuencias, int tamano, int *codigoGenerado, char ***diccionario){
+    struct nodo *tmp, *arbol = (struct nodo*)malloc(sizeof(struct nodo));
+    // Generar lista enlazada con los valores necesarios
+    for (int i = 0; i < tamano; i++)
+    {
+        if (i == 0)
+        {
+            arbol->letra = simbolos[i];
+            arbol->frecuencia = frecuencias[i];
+            arbol->sig = NULL;
+            arbol->cero = NULL;
+            arbol->uno = NULL;
+        }
+        else
+        {
+            tmp = arbol;
+            arbol = (struct nodo*)malloc(sizeof(struct nodo));
+            arbol->letra = simbolos[i];
+            arbol->frecuencia = frecuencias[i];
+            arbol->sig = tmp;
+            arbol->cero = NULL;
+            arbol->uno = NULL;
+        }
+        printf("%p-%c(%.2f)->%p\n",arbol,arbol->letra,arbol->frecuencia,arbol->sig);
+    }
+    *codigoGenerado = 1;
+    return arbol;
+}
+
+void mostrarArbol(struct nodo *arbol, int contador){
+    if (arbol == NULL)
+    {
+        return;
+    }
+    else
+    {
+        mostrarArbol(arbol->uno, contador+1);
+        for (int i = 0; i < contador; i++)
+        {
+            printf("    ");
+        }
+        printf("%.2f",arbol->frecuencia);
+        mostrarArbol(arbol->cero, contador+1);
+    }
+    
+}
+
+void mostrarLista(struct nodo *arbol){
+    if(arbol == NULL){
+        return;
+    }
+    if (arbol->sig)
+    {
+        mostrarLista(arbol->sig);
+        printf("(%.2f)",arbol->frecuencia);
+    }
+    else{
+        printf("(%.2f)",arbol->frecuencia);
+    }
+    
 }
