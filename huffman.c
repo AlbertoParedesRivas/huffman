@@ -26,6 +26,9 @@ void mostrarLista(nodoArbol *);
 void ordenarLista(nodoArbol **);
 void insertarOrden(nodoArbol **, nodoArbol *);
 void mostrarArbol(nodoArbol *, int);
+void recorrerArbol(nodoArbol *,char *, char ***, char[], int, int);
+int esHoja(nodoArbol *);
+void asignarCodigo(char, char*, char***, int, char[]);
 
 int main()
 {
@@ -57,8 +60,9 @@ int main()
         if (codigoGenerado)
         {
             printf("8. Codificar mensaje\n9. Decodificar mensaje\n10. Salir\n");
-            // mostrarDiccionario(simbolos, diccionario, tamano);
+            printf("Arbol actual:\n");
             mostrarArbol(arbol, 0);
+            mostrarDiccionario(simbolos, diccionario, tamano);
         }
         else
         {
@@ -504,7 +508,16 @@ nodoArbol *generarDiccionario(char *simbolos, float *frecuencias, int tamano, in
         // mostrarLista(arbol);
         // printf("\n");
     }
-    
+    // Asigna los codigos a los simbolos
+    char codigo[50];
+    if(*codigoGenerado){
+        for (int i = 0; i < tamano; i++)
+        {
+            free((*diccionario)[i]);
+        }
+    }
+    *diccionario = (char **)realloc(*diccionario, sizeof(char*)*tamano);
+    recorrerArbol(arbol,simbolos,diccionario, codigo, tamano, 0);
 
     *codigoGenerado = 1;
     return arbol;
@@ -523,7 +536,7 @@ void mostrarArbol(nodoArbol *arbol, int contador)
         {
             printf("            ");
         }
-        printf("%.2f\n", arbol->frecuencia);
+        printf("%c(%.2f)\n",arbol->letra, arbol->frecuencia);
         mostrarArbol(arbol->cero, contador + 1);
     }
 }
@@ -587,6 +600,45 @@ void insertarOrden(nodoArbol **lista, nodoArbol *nuevo)
         else
         {
             (*lista) = nuevo;
+        }
+    }
+}
+
+void recorrerArbol(nodoArbol *arbol, char *simbolos, char ***diccionario, char codigo[], int tamano, int contador){
+    if (arbol->cero)
+    {
+        codigo[contador] = '0';
+        recorrerArbol(arbol->cero,simbolos, diccionario, codigo, tamano, contador + 1);
+    }
+    if (arbol->uno)
+    {
+        codigo[contador] = '1';
+        recorrerArbol(arbol->uno,simbolos, diccionario, codigo, tamano, contador + 1);
+    }
+    if (esHoja(arbol))
+    {
+        codigo[contador] = '\0';
+        asignarCodigo(arbol->letra, simbolos, diccionario, tamano, codigo);
+    }
+    
+    
+}
+
+int esHoja(nodoArbol *nodo){
+    if(nodo->cero == NULL && nodo->uno == NULL){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+void asignarCodigo(char letra, char *simbolos, char ***diccionario, int tamano, char codigo[]){
+    for (int i = 0; i < tamano; i++)
+    {
+        if (simbolos[i] == letra)
+        {
+            (*diccionario)[i] = (char *)malloc(sizeof(char)*strlen(codigo));
+            strcpy((*diccionario)[i], codigo);
         }
     }
 }
