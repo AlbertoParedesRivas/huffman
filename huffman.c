@@ -208,7 +208,7 @@ void eliminarSimbolo(char *simbolos, float *frecuencias, int *tamano)
             frecuencias[i] = frecuencias[i + 1];
         }
         (*tamano)--;
-        tmpSimbolos = realloc(simbolos, sizeof(int) * (*tamano));
+        tmpSimbolos = realloc(simbolos, sizeof(char) * (*tamano));
         if (tmpSimbolos)
         {
             simbolos = tmpSimbolos;
