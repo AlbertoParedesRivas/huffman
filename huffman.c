@@ -63,12 +63,12 @@ int main()
             printf("8. Codificar mensaje\n9. Decodificar mensaje\n10. Salir\n");
             mostrarDiccionario(simbolos, diccionario, tamano);
         }
-        else if (arbolGenerado)
+        if (arbolGenerado)
         {
             printf("Arbol actual:\n");
             mostrarArbol(arbol, 0);
         }
-        else
+        if(!codigoGenerado && !arbolGenerado)
         {
             printf("10. Salir\n");
         }
