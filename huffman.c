@@ -29,6 +29,7 @@ void mostrarArbol(nodoArbol *, int);
 void recorrerArbol(nodoArbol *,char *, char ***, char[], int, int);
 int esHoja(nodoArbol *);
 void asignarCodigo(char, char*, char***, int, char[]);
+int validarFrecuencias(float *, int);
 
 int main()
 {
@@ -95,7 +96,9 @@ int main()
             break;
         case 5:
             arbol = generarDiccionario(simbolos, frecuencias, tamano, &codigoGenerado, &diccionario);
-            arbolGenerado = 1;
+            if(arbol){
+                arbolGenerado = 1;
+            }
             break;
         case 6:
             guardarDiccionario(simbolos, diccionario, tamano, codigoGenerado);
@@ -478,6 +481,11 @@ void decodificarMensaje(char *simbolos, char **diccionario, int tamano, int codi
 nodoArbol *generarDiccionario(char *simbolos, float *frecuencias, int tamano, int *codigoGenerado, char ***diccionario)
 {
     nodoArbol *tmp, *arbol, *arbolAux, *lista = (nodoArbol *)malloc(sizeof(nodoArbol));
+    if(!validarFrecuencias(frecuencias, tamano)){
+        printf("Las frecuencias registradas no suman el 100%c\n",37);
+        free(lista);
+        return NULL;
+    }
     // Generar lista enlazada con los valores necesarios
     for (int i = 0; i < tamano; i++)
     {
@@ -651,4 +659,20 @@ void asignarCodigo(char letra, char *simbolos, char ***diccionario, int tamano, 
             strcpy((*diccionario)[i], codigo);
         }
     }
+}
+
+int validarFrecuencias(float *frecuencias, int tamano){
+    float suma = 0;
+    for (int i = 0; i < tamano; i++)
+    {
+        suma += frecuencias[i];
+    }
+    if (suma != 100.0)
+    {
+        return 0;
+    }else{
+        return 1;
+    }
+    
+    
 }
